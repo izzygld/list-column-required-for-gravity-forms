@@ -65,31 +65,38 @@
      * when they want the whole thing required.
      *
      * we listen on the #field_required checkbox which calls
-     * SetFieldRequired(this.checked) via onclick in form_detail.php
+     * SetFieldRequired(this.checked) via onclick in form_detail.php.
+     * use 'change' (not 'click') so we run after GF's inline onclick handler
+     * has already updated the field model.
      */
-    $(document).on('click', '#field_required', function () {
-        var field = GetSelectedField();
+    $(document).on('change click', '#field_required', function () {
+        var checkbox = this;
 
-        // only do this for list fields with columns enabled
-        if (!field || GetInputType(field) !== 'list' || !field.enableColumns || !field.choices) {
-            return;
-        }
+        // defer so we run after GF's inline onclick=SetFieldRequired() finishes
+        setTimeout(function () {
+            if (!checkbox.checked) {
+                return;
+            }
 
-        var isChecked = $(this).is(':checked');
+            // if there are no column-required checkboxes rendered, nothing to do
+            var $cols = $('.lcr-gf-col-required');
+            if (!$cols.length) {
+                return;
+            }
 
-        // only auto-set when turning required ON, dont clear when turning OFF
-        // (admin might want the field optional but still keep specific columns required)
-        if (!isChecked) {
-            return;
-        }
+            // update the field model so the state persists on save
+            if (typeof GetSelectedField === 'function') {
+                var field = GetSelectedField();
+                if (field && field.choices) {
+                    for (var i = 0; i < field.choices.length; i++) {
+                        field.choices[i].isColumnRequired = true;
+                    }
+                }
+            }
 
-        // mark all columns as required
-        for (var i = 0; i < field.choices.length; i++) {
-            field.choices[i].isColumnRequired = true;
-        }
-
-        // refresh the column choices UI so the checkboxes reflect the new state
-        LoadFieldChoices(field);
+            // visually check all column-required boxes
+            $cols.prop('checked', true);
+        }, 0);
     });
 
 })(jQuery);
