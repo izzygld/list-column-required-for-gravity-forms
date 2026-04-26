@@ -35,6 +35,66 @@ class LCR_GF_Frontend {
     }
 
     /**
+     * registerin the render-time filters that flag list fields with required columns
+     * as required, so GF emits its standard label asterisk + "indicates required fields"
+     * legend. these need to fire in both frontend and admin contexts (entry view, etc),
+     * so they get hooked separately from hookup() which only runs on the frontend.
+     *
+     * @return void
+     */
+    public function hookup_render_flags() {
+        // virtually flag list fields with required columns as required at render time
+        // this makes GF show the field-label asterisk + the "* indicates required fields"
+        // legend at top of the form. validation is unaffected (handled by validator class).
+        add_filter( 'gform_pre_render', array( $this, 'flag_field_required_for_render' ) );
+        add_filter( 'gform_admin_pre_render', array( $this, 'flag_field_required_for_render' ) );
+    }
+
+    /**
+     * flippin isRequired = true on list fields that have any column-level required set
+     * but only at render time, so the field-label asterisk and the form-level required
+     * legend ("* indicates required fields") appear for accessibility/consistency.
+     *
+     * note: this does NOT affect validation. our LCR_GF_Validator handles the actual
+     * column-level required checks. GF's own list-field "isRequired" validation (which
+     * just needs one non-empty row) would only kick in if field-level required was
+     * actually set in the editor, which is not the case here.
+     *
+     * @param array $form the form object being rendered
+     * @return array modified form
+     */
+    public function flag_field_required_for_render( $form ) {
+        if ( empty( $form['fields'] ) || ! is_array( $form['fields'] ) ) {
+            return $form;
+        }
+
+        foreach ( $form['fields'] as $da_field ) {
+            if ( ! is_object( $da_field ) || $da_field->type !== 'list' ) {
+                continue;
+            }
+
+            if ( empty( $da_field->enableColumns ) || ! is_array( $da_field->choices ) ) {
+                continue;
+            }
+
+            // if user already set field-level required, leave it alone
+            if ( ! empty( $da_field->isRequired ) ) {
+                continue;
+            }
+
+            // check if any column is marked required
+            foreach ( $da_field->choices as $da_choice ) {
+                if ( ! empty( $da_choice['isColumnRequired'] ) ) {
+                    $da_field->isRequired = true;
+                    break;
+                }
+            }
+        }
+
+        return $form;
+    }
+
+    /**
      * addin required and aria-required attributes to inputs in required columns
      * fires via the gform_column_input_content filter for each column input
      *

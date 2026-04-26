@@ -40,6 +40,7 @@ Required columns display an asterisk (**\***) in the column header, matching Gra
 | **Auto-Require All** | When the main field-level "Required" rule is toggled ON, all columns are automatically marked as required too. You can then uncheck individual columns if needed. Toggling the field-level rule OFF does *not* clear column-level required flags. |
 | **Server Validation** | On submission, the `gform_field_validation` filter checks every row. If a row has any data at all, all required columns in that row must be filled. If all rows are empty, the first row is still validated — required columns mean "you gotta fill this in." |
 | **Front-End Rendering** | The `gform_field_content` filter adds a red asterisk to required column headers. The `gform_column_input_content` filter adds `aria-required="true"` to inputs for accessibility. |
+| **Field-Label Indicator** | When any column is marked required (and field-level "Required" is off), `gform_pre_render` / `gform_admin_pre_render` virtually flag the list field as required at render time only. This makes GF emit its standard label asterisk and the "* indicates required fields" legend at the top of the form — without affecting validation (handled separately by the validator). |
 
 ### Validation Logic
 
@@ -92,6 +93,8 @@ list-column-required-for-gravity-forms/
 | `gform_field_validation` | Filter | Server-side per-column required validation |
 | `gform_column_input_content` | Filter | Add `aria-required` to required column inputs |
 | `gform_field_content` | Filter | Add asterisk to required column headers |
+| `gform_pre_render` | Filter | Virtually flag list fields with required columns as required at render time (frontend) so GF shows the label asterisk + required legend |
+| `gform_admin_pre_render` | Filter | Same as above for admin contexts (entry view, etc.) |
 
 ## Developer Notes
 

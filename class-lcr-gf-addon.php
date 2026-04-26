@@ -144,6 +144,10 @@ class LCR_GF_Addon extends GFAddOn {
 
         // hookin up the server-side validation for list column required checks
         $this->validator->hookup();
+
+        // register render-time flags so the required legend + label asterisk show up
+        // in both frontend and admin contexts (e.g. entry view)
+        $this->frontend->hookup_render_flags();
     }
 
     /**
