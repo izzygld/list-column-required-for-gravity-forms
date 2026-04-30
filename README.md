@@ -1,8 +1,21 @@
 # List Column Required for Gravity Forms
 
+[![Download on WordPress.org](https://img.shields.io/wordpress/plugin/v/list-column-required-for-gravity-forms?label=WordPress.org&logo=wordpress&color=21759b&style=for-the-badge)](https://wordpress.org/plugins/list-column-required-for-gravity-forms/)
+[![Active Installs](https://img.shields.io/wordpress/plugin/installs/list-column-required-for-gravity-forms?label=Active%20Installs&style=for-the-badge&color=21759b)](https://wordpress.org/plugins/list-column-required-for-gravity-forms/)
+[![Rating](https://img.shields.io/wordpress/plugin/rating/list-column-required-for-gravity-forms?label=Rating&style=for-the-badge&color=21759b)](https://wordpress.org/plugins/list-column-required-for-gravity-forms/#reviews)
+[![License: GPL v2](https://img.shields.io/badge/License-GPLv2-blue.svg?style=for-the-badge)](https://www.gnu.org/licenses/gpl-2.0)
+
 A Gravity Forms add-on that lets you mark individual columns as **required** in multi-column List fields — something Gravity Forms doesn't support out of the box.
 
 By default, Gravity Forms only allows you to make the entire List field required (meaning at least one row must be filled). This plugin goes further: you can choose **which columns** within each row must be filled in before the form can be submitted.
+
+> ### 📥 Get the Plugin
+>
+> **The easiest way to install is directly from the WordPress.org plugin directory:**
+>
+> ### 👉 [**Download from WordPress.org**](https://wordpress.org/plugins/list-column-required-for-gravity-forms/) 👈
+>
+> Or search for **"List Column Required for Gravity Forms"** under **Plugins → Add New** in your WordPress dashboard.
 
 ---
 
