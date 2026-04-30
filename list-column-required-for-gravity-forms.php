@@ -3,7 +3,7 @@
  * Plugin Name: List Column Required for Gravity Forms
  * Plugin URI: https://github.com/izzygld/list-column-required-for-gravity-forms
  * Description: Adds per-column required validation to Gravity Forms List fields with multiple columns. Mark individual columns as required right in the form editor.
- * Version: 1.1.1
+ * Version: 1.1.2
  * Author: izzygld
  * Author URI: https://github.com/izzygld
  * Text Domain: list-column-required-for-gravity-forms
@@ -18,7 +18,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // settin up all our constant values for the plugin
-define( 'LCR_GF_VERSION', '1.1.1' );
+define( 'LCR_GF_VERSION', '1.1.2' );
 define( 'LCR_GF_MIN_GF_VERSION', '2.5' );
 define( 'LCR_GF_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LCR_GF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
