@@ -1,0 +1,32 @@
+# Files and folders that should NOT be deployed to WordPress.org SVN trunk.
+# Used by 10up/action-wordpress-plugin-deploy.
+
+# Directories
+.git
+.github
+.wordpress-org
+node_modules
+tests
+
+# Files
+.DS_Store
+.gitignore
+.gitattributes
+.distignore
+.editorconfig
+.eslintrc
+.phpcs.xml
+.phpcs.xml.dist
+phpcs.xml
+phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+composer.json
+composer.lock
+package.json
+package-lock.json
+yarn.lock
+README.md
+*.zip
+*.log
+*.sql
