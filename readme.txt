@@ -4,7 +4,7 @@ Donate link: https://github.com/izzygld
 Tags: gravity forms, list field, required columns, validation, form editor
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -81,6 +81,9 @@ No. Column required state is stored in the existing form JSON as an `isColumnReq
 
 == Changelog ==
 
+= 1.1.1 =
+* Maintenance release: added automated WordPress.org SVN deployment workflow and official plugin assets (icon, banner, screenshots). No functional changes.
+
 = 1.1.0 =
 * Accessibility + consistency: when any column is marked required (but the field-level "Required" is off), the field label now shows the standard asterisk and the form displays the "* indicates required fields" legend at the top — matching how GF natively signals required fields. Validation behavior is unchanged.
 
@@ -93,6 +96,9 @@ No. Column required state is stored in the existing form JSON as an `isColumnReq
 * Auto-require all columns when field-level required is toggled ON
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Maintenance release. Safe to upgrade — no functional changes.
 
 = 1.1.0 =
 Adds field-label asterisk + "indicates required fields" legend when any column is required, for better accessibility and consistency with native GF required fields.
