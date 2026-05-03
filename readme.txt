@@ -4,7 +4,7 @@ Donate link: https://github.com/izzygld
 Tags: gravity forms, list field, required columns, validation, form editor
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -81,6 +81,12 @@ No. Column required state is stored in the existing form JSON as an `isColumnReq
 
 == Changelog ==
 
+= 1.2.0 =
+* Cell-level error highlighting: only the specific empty required cells in a List field now show the red error border, instead of every cell in the field.
+* Accessibility: `aria-invalid="true"` is now set only on the failing cells (was previously a blanket effect).
+* New CSS hooks for theming: required cells get `lcr-gf-required-cell` and `data-lcr-col="Column Name"`; failing cells additionally get `lcr-gf-cell-error`.
+* Subtle visual marker on required-but-currently-valid cells (inset border on the left edge) inside the GF framework theme.
+
 = 1.1.2 =
 * Maintenance release: added automated WordPress.org SVN deployment workflow and official plugin assets (icon, banner, screenshots). No functional changes from 1.1.0.
 
@@ -99,6 +105,9 @@ No. Column required state is stored in the existing form JSON as an `isColumnReq
 * Auto-require all columns when field-level required is toggled ON
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Error highlighting is now per-cell instead of per-field — only the actual empty required cells get the red border. No action required, no breaking changes.
 
 = 1.1.2 =
 Maintenance release. Safe to upgrade — no functional changes.

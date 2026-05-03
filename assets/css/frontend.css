@@ -1,0 +1,48 @@
+/**
+ * List Column Required for Gravity Forms - Frontend CSS
+ *
+ * scopes the GF "errored field = everything red" effect down to only the
+ * specific List cells that actually failed our column-required validation.
+ *
+ * works with GF's framework theme custom properties so it auto-inherits the
+ * site's theme colors (light, dark, custom).
+ *
+ * @package LCR_GF
+ */
+
+/* -----------------------------------------------------------------------------
+ * 1) Neutralize GF's blanket error styling on List fields.
+ *    When the field has .gfield_error, GF paints every input/select/textarea
+ *    inside it red. For List fields with per-column required, we only want the
+ *    actual missing cells highlighted — so we reset everything that is NOT
+ *    explicitly flagged with our .lcr-gf-cell-error hook.
+ * ---------------------------------------------------------------------------*/
+.gform-theme--framework .gfield--type-list.gfield_error
+    :is(input[type], select, textarea):not(.lcr-gf-cell-error):not([type="hidden"]) {
+    --gf-local-bg-color: var(--gf-ctrl-bg-color);
+    --gf-local-border-color: var(--gf-ctrl-border-color);
+    --gf-local-color: var(--gf-ctrl-color);
+}
+
+/* -----------------------------------------------------------------------------
+ * 2) Re-apply the standard GF error look ONLY on cells we flagged as missing
+ *    a required value. Same custom properties GF uses, so the colors match
+ *    whatever the active theme defines.
+ * ---------------------------------------------------------------------------*/
+.gform-theme--framework .gfield--type-list .lcr-gf-cell-error,
+.gform-theme--framework .gfield--type-list.gfield_error .lcr-gf-cell-error {
+    --gf-local-bg-color: var(--gf-ctrl-bg-color-error);
+    --gf-local-border-color: var(--gf-ctrl-border-color-error);
+    --gf-local-color: var(--gf-ctrl-color-error);
+}
+
+/* -----------------------------------------------------------------------------
+ * 3) Optional: subtle visual marker on required-but-currently-valid cells so
+ *    sighted users can scan which cells are required. Only kicks in inside the
+ *    framework theme, fades on focus to avoid clashing with GF focus rings.
+ * ---------------------------------------------------------------------------*/
+.gform-theme--framework
+    .gfield--type-list
+    .lcr-gf-required-cell:not(.lcr-gf-cell-error):not(:focus) {
+    box-shadow: inset 2px 0 0 0 var(--gf-ctrl-border-color, #d4d4d4);
+}

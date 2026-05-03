@@ -20,6 +20,46 @@ defined( 'ABSPATH' ) || exit;
 class LCR_GF_Validator {
 
     /**
+     * static map of failed cells per field id, populated during validate_list_columns()
+     * shape: [ field_id => [ [ 'row' => 0, 'col' => 'Email' ], ... ] ]
+     *
+     * read by LCR_GF_Frontend on re-render to apply per-cell error classes.
+     *
+     * @var array<int,array<int,array{row:int,col:string}>>
+     */
+    private static $failed_cells = array();
+
+    /**
+     * gettin the list of failed cells for a given field
+     *
+     * @param int $field_id the gf field id
+     * @return array list of failed cells, each as [ 'row' => int, 'col' => string ]
+     */
+    public static function get_failed_cells( $field_id ) {
+        return isset( self::$failed_cells[ $field_id ] ) ? self::$failed_cells[ $field_id ] : array();
+    }
+
+    /**
+     * checkin if a specific cell failed validation
+     *
+     * @param int    $field_id the gf field id
+     * @param int    $row      the zero-based row index
+     * @param string $col      the column name
+     * @return bool
+     */
+    public static function is_cell_failed( $field_id, $row, $col ) {
+        if ( empty( self::$failed_cells[ $field_id ] ) ) {
+            return false;
+        }
+        foreach ( self::$failed_cells[ $field_id ] as $cell ) {
+            if ( (int) $cell['row'] === (int) $row && (string) $cell['col'] === (string) $col ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * hookin up our validation filter
      * this gets called from the main addon init()
      *
@@ -86,6 +126,7 @@ class LCR_GF_Validator {
 
         // check each row for required column values
         $da_missing_columns = array();
+        $da_failed_cells    = array();
 
         foreach ( $da_list_values as $da_row_index => $da_row ) {
             if ( ! is_array( $da_row ) ) {
@@ -111,9 +152,19 @@ class LCR_GF_Validator {
                     if ( ! in_array( $da_col_name, $da_missing_columns, true ) ) {
                         $da_missing_columns[] = $da_col_name;
                     }
+
+                    // also track the exact cell coordinates for per-cell highlighting
+                    $da_failed_cells[] = array(
+                        'row' => (int) $da_row_index,
+                        'col' => (string) $da_col_name,
+                    );
                 }
             }
         }
+
+        // stash failed cells so the frontend can mark only the specific inputs as errored
+        // overwrite any prior data for this field id (single submit lifecycle)
+        self::$failed_cells[ (int) $field->id ] = $da_failed_cells;
 
         // if we found missing required columns, fail the validation
         if ( ! empty( $da_missing_columns ) ) {

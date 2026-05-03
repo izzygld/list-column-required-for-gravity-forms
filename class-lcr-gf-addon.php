@@ -205,6 +205,17 @@ class LCR_GF_Addon extends GFAddOn {
                     ),
                 ),
             ),
+            array(
+                'handle'  => 'lcr_gf_frontend',
+                'src'     => $this->get_base_url() . '/assets/css/frontend.css',
+                'version' => $this->_version,
+                'enqueue' => array(
+                    array(
+                        // load on any page that has a GF form rendered
+                        'field_types' => array( 'list' ),
+                    ),
+                ),
+            ),
         );
 
         return array_merge( parent::styles(), $da_styles );

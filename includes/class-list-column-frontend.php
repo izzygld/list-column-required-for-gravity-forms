@@ -21,6 +21,18 @@ defined( 'ABSPATH' ) || exit;
 class LCR_GF_Frontend {
 
     /**
+     * per-field row counter used during a single render pass.
+     * shape: [ field_id => current_row_index ]
+     *
+     * GF's gform_column_input_content filter doesn't pass a row index, so we
+     * track it ourselves by detecting when the first column of the field is
+     * encountered (= start of a new row).
+     *
+     * @var array<int,int>
+     */
+    private $row_cursor = array();
+
+    /**
      * hookin up our frontend filters
      * this gets called from the main addon init_frontend()
      *
@@ -112,18 +124,79 @@ class LCR_GF_Frontend {
             return $input;
         }
 
+        // advance our row cursor: first column of this field = new row starting
+        $da_first_col = isset( $field->choices[0]['text'] ) ? (string) $field->choices[0]['text'] : '';
+        $da_field_id  = (int) $field->id;
+
+        if ( $da_first_col !== '' && (string) $column_text === $da_first_col ) {
+            // bump the cursor; -1 + 1 = 0 for the first row, then 1, 2, ...
+            $this->row_cursor[ $da_field_id ] = isset( $this->row_cursor[ $da_field_id ] )
+                ? $this->row_cursor[ $da_field_id ] + 1
+                : 0;
+        }
+
+        $da_row_index = isset( $this->row_cursor[ $da_field_id ] ) ? (int) $this->row_cursor[ $da_field_id ] : 0;
+
         // check if this column is marked as required
         if ( ! $this->is_column_required( $field, $column_text ) ) {
             return $input;
         }
 
-        // add required and aria-required attributes to the input/select element
-        // look for existing aria-invalid attribute as an anchor point
+        // build the extra attributes/classes we want to inject onto the input/select element
+        $da_extra_class = 'lcr-gf-required-cell';
+        $da_data_col    = esc_attr( (string) $column_text );
+
+        // if this specific cell failed validation on submit, also flag it for the red border
+        $da_failed_here = false;
+        if ( class_exists( 'LCR_GF_Validator' ) && LCR_GF_Validator::is_cell_failed( $da_field_id, $da_row_index, (string) $column_text ) ) {
+            $da_extra_class .= ' lcr-gf-cell-error';
+            $da_failed_here = true;
+        }
+
+        // 1) add aria-required (and bump aria-invalid to true if this cell failed)
         if ( strpos( $input, 'aria-required' ) === false ) {
-            $input = str_replace(
-                "aria-invalid=",
-                "aria-required='true' aria-invalid=",
-                $input
+            $da_replacement = $da_failed_here
+                ? "aria-required='true' aria-invalid='true' "
+                : "aria-required='true' aria-invalid=";
+
+            $da_search = $da_failed_here ? "aria-invalid='false'" : 'aria-invalid=';
+
+            // when failing, we want to fully replace the false attribute; otherwise just inject before it
+            if ( $da_failed_here ) {
+                // try the common single-quoted form first, then double-quoted, then any boolean form
+                if ( strpos( $input, "aria-invalid='false'" ) !== false ) {
+                    $input = str_replace( "aria-invalid='false'", "aria-invalid='true'", $input );
+                } elseif ( strpos( $input, 'aria-invalid="false"' ) !== false ) {
+                    $input = str_replace( 'aria-invalid="false"', 'aria-invalid="true"', $input );
+                }
+                // inject aria-required just before whatever aria-invalid attribute remains
+                $input = preg_replace( '/(aria-invalid=)/', "aria-required='true' $1", $input, 1 );
+            } else {
+                $input = str_replace( 'aria-invalid=', "aria-required='true' aria-invalid=", $input );
+            }
+        } elseif ( $da_failed_here ) {
+            // aria-required already present; still need to flip aria-invalid
+            $input = preg_replace( "/aria-invalid=(['\"])false\\1/", 'aria-invalid=$1true$1', $input, 1 );
+        }
+
+        // 2) inject our hook class + data-lcr-col into the existing class attribute (or create one)
+        if ( preg_match( '/\sclass=([\'"])([^\'"]*)\1/', $input, $m ) ) {
+            $da_quote     = $m[1];
+            $da_existing  = $m[2];
+            $da_new_class = trim( $da_existing . ' ' . $da_extra_class );
+            $input        = preg_replace(
+                '/\sclass=([\'"])[^\'"]*\1/',
+                ' class=' . $da_quote . $da_new_class . $da_quote . ' data-lcr-col=' . $da_quote . $da_data_col . $da_quote,
+                $input,
+                1
+            );
+        } else {
+            // no existing class attribute: tack one on after the tag name
+            $input = preg_replace(
+                '/<(input|select|textarea)\b/i',
+                "<$1 class='" . $da_extra_class . "' data-lcr-col='" . $da_data_col . "'",
+                $input,
+                1
             );
         }
 
