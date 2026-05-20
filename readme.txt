@@ -3,7 +3,7 @@ Contributors: izzygld
 Donate link: https://github.com/izzygld
 Tags: gravity forms, list field, required columns, validation, form editor
 Requires at least: 5.8
-Tested up to: 6.9
+Tested up to: 7.0
 Stable tag: 1.2.0
 Requires PHP: 7.4
 License: GPLv2 or later
